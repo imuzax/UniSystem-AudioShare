@@ -29,12 +29,20 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
-    // Get local IP to show the exact link to the user
-    let local_ip = local_ip_address::local_ip().unwrap();
+    // Get all local IPs to show the exact links to the user (bypassing docker/vpn confusion)
     println!("============================================================");
     println!("🚀 AudioShare Server is Running!");
-    println!("📱 Open your phone browser and go to:");
-    println!("🌐 http://{}:8080", local_ip);
+    println!("📱 Open your phone browser and go to one of these links (pick your Wi-Fi IP):");
+    
+    if let Ok(network_interfaces) = local_ip_address::list_afinet_netifas() {
+        for (name, ip) in network_interfaces.iter() {
+            if ip.is_ipv4() && !ip.is_loopback() {
+                println!("🌐 [{}] http://{}:8080", name, ip);
+            }
+        }
+    } else {
+        println!("🌐 http://0.0.0.0:8080");
+    }
     println!("============================================================");
     println!("Listening to default audio capture stream. Press Ctrl+C to stop.");
     
