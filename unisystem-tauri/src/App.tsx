@@ -49,10 +49,8 @@ function App() {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <div className="brand-logo-container">
+        <div className="brand-header-content">
           <img src="/logo.svg" alt="UniSystem Logo" className="brand-logo" />
-        </div>
-        <div className="brand-text">
           <p className="subtitle">Stream your PC audio to any device on the network in real-time.</p>
         </div>
       </header>
