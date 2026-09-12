@@ -1,94 +1,120 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import "./App.css";
 
-interface NetworkPayload {
+interface NetworkInterface {
   name: string;
   ip: string;
 }
 
-interface VolumePayload {
-  peak: f32; // wait, TypeScript uses number
-}
-
 function App() {
-  const [ips, setIps] = useState<NetworkPayload[]>([]);
-  const [volume, setVolume] = useState(0);
+  const [ips, setIps] = useState<NetworkInterface[]>([]);
+  // Create an array of 64 visualizer bars for a huge display
+  const [peaks, setPeaks] = useState<number[]>(new Array(64).fill(0));
 
   useEffect(() => {
-    // Fetch IPs
-    invoke<NetworkPayload[]>("get_network_ips")
-      .then((res) => setIps(res))
+    // Get network interfaces
+    invoke<NetworkInterface[]>("get_network_interfaces")
+      .then((interfaces) => {
+        setIps(interfaces);
+      })
       .catch(console.error);
 
-    // Listen to volume peaks
-    const unlisten = listen<{ peak: number }>("volume-peak", (event) => {
-      setVolume(event.payload.peak);
+    // Listen for volume peaks
+    const unlisten = listen<number>("volume-peak", (event) => {
+      const vol = event.payload;
+      setPeaks(prev => {
+        const newPeaks = [...prev];
+        // Shift left
+        newPeaks.shift();
+        // Add new volume with some random variation for aesthetics
+        const variation = vol * (0.8 + Math.random() * 0.4);
+        newPeaks.push(Math.min(1.0, variation));
+        return newPeaks;
+      });
     });
 
     return () => {
-      unlisten.then((f) => f());
+      unlisten.then(f => f());
     };
   }, []);
 
   return (
-    <div className="container">
-      <header className="header">
-        <img src="/logo.jpg" alt="UniSystem Logo" className="app-logo" />
-        <h1>UniSystem AudioShare</h1>
-        <p className="subtitle">Stream your PC audio to any device on the network in real-time.</p>
-      </header>
+    <div className="dashboard-wrapper">
+      {/* Dynamic Animated Background Orbs */}
+      <div className="aura-orb orb-primary"></div>
+      <div className="aura-orb orb-secondary"></div>
 
-      <main>
-        <section className="glass-card visualizer-section">
-          <h2>Live Audio Broadcast</h2>
-          <div className="visualizer-container">
-            {Array.from({ length: 40 }).map((_, i) => {
-              // Map 0.0 -> 1.0 volume to 40 bars
-              const isActive = (volume * 40) > i;
-              return (
-                <div 
-                  key={i} 
-                  className={`bar ${isActive ? 'active' : ''}`}
-                  style={{ height: isActive ? `${Math.max(10, (volume * 100) + (Math.random() * 20))}px` : '10px' }}
-                />
-              );
-            })}
+      <div className="glass-dashboard">
+        <header className="dashboard-header">
+          <div className="brand-title">
+            <img src="/logo.jpg" alt="UniSystem Logo" className="brand-logo" />
+            <div>
+              <h1>UniSystem <span>AudioShare</span></h1>
+              <p className="status-badge">
+                <span className="dot pulse"></span>
+                Engine Active & Streaming
+              </p>
+            </div>
           </div>
-          <p className="status">
-            <span className="dot pulse"></span>
-            Broadcasting 48kHz Float32 PCM
-          </p>
-        </section>
+        </header>
 
-        <section className="glass-card network-section">
-          <h2>Connect Your Devices</h2>
-          <p className="instruction">Open this URL on your phone's browser to listen instantly:</p>
-          
-          <div className="ip-list">
-            {ips.length > 0 ? ips.map((item, idx) => (
-              <div key={idx} className="ip-card">
-                <span className="net-name">{item.name}</span>
-                <a 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    import('@tauri-apps/plugin-opener').then(opener => {
-                      opener.open(`http://${item.ip}:8080`);
-                    });
-                  }} 
-                  className="net-ip"
-                >
-                  http://{item.ip}:8080
-                </a>
-              </div>
-            )) : (
-              <div className="ip-card loading">Scanning network...</div>
-            )}
-          </div>
-        </section>
-      </main>
+        <main className="dashboard-content">
+          {/* Hero Visualizer */}
+          <section className="hero-visualizer-section">
+            <div className="visualizer-display">
+              {peaks.map((p, i) => (
+                <div
+                  key={i}
+                  className={`vis-bar ${p > 0.05 ? 'active' : ''}`}
+                  style={{ 
+                    height: `${Math.max(4, p * 200)}px`,
+                    opacity: 0.3 + p * 0.7
+                  }}
+                ></div>
+              ))}
+            </div>
+            <div className="db-meter">
+              <span>-60 dB</span>
+              <span>-30 dB</span>
+              <span>0 dB</span>
+            </div>
+          </section>
+
+          {/* Network Links */}
+          <section className="network-section">
+            <h2 className="section-title">Available Connectors</h2>
+            <p className="instruction-text">
+              Open these URLs on any device connected to the same Wi-Fi.
+            </p>
+            
+            <div className="devices-grid">
+              {ips.length > 0 ? ips.map((item, idx) => (
+                <div key={idx} className="device-card">
+                  <div className="device-info">
+                    <span className="device-icon">🌐</span>
+                    <span className="device-name">{item.name}</span>
+                  </div>
+                  <a 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openUrl(`http://${item.ip}:8080`);
+                    }} 
+                    className="device-link"
+                  >
+                    http://{item.ip}:8080
+                  </a>
+                </div>
+              )) : (
+                <div className="loading-state">Scanning Network...</div>
+              )}
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   );
 }
