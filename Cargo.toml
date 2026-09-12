@@ -3,7 +3,7 @@ resolver = "2"
 members = [
     "unisystem-core",
     "unisystem-audio",
-    "unisystem-tauri",
+    "unisystem-tauri/src-tauri",
     "unisystem-cli"
 ]
 
