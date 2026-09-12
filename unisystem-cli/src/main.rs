@@ -29,8 +29,17 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
+    // Get local IP to show the exact link to the user
+    let local_ip = local_ip_address::local_ip().unwrap();
+    println!("============================================================");
+    println!("🚀 AudioShare Server is Running!");
+    println!("📱 Open your phone browser and go to:");
+    println!("🌐 http://{}:8080", local_ip);
+    println!("============================================================");
     println!("Listening to default audio capture stream. Press Ctrl+C to stop.");
-    println!("Open your phone browser and navigate to this computer's local IP on port 8080.");
+    
+    // Slight delay so the user can read the message before the volume meter starts spamming
+    std::thread::sleep(std::time::Duration::from_millis(500));
     
     // We run the audio capture on a separate dedicated OS thread because PipeWire's MainLoop blocks
     std::thread::spawn(move || {

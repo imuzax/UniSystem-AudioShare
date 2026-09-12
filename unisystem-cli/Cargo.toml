@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 anyhow = "1.0.104"
 ctrlc = "3.5.2"
+local-ip-address = "0.6.13"
 tokio = { version = "1.53.1", features = ["full"] }
 unisystem-audio = { version = "0.1.0", path = "../unisystem-audio" }
 unisystem-core = { version = "0.1.0", path = "../unisystem-core" }
