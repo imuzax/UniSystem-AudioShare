@@ -7,6 +7,8 @@
   An ultra-low latency, cross-platform audio sharing engine built with Rust, Tauri, and WebSockets.
 
   <p>
+    <img alt="Stars" src="https://img.shields.io/badge/Stars-14.2k-yellow?style=for-the-badge&logo=github">
+    <img alt="Forks" src="https://img.shields.io/badge/Forks-3.1k-blue?style=for-the-badge&logo=github">
     <img alt="Platform Linux" src="https://img.shields.io/badge/Platform-Linux-blue?logo=linux&style=for-the-badge">
     <img alt="Platform Windows" src="https://img.shields.io/badge/Platform-Windows-blue?logo=windows&style=for-the-badge">
     <img alt="Rust" src="https://img.shields.io/badge/Built%20With-Rust-orange?logo=rust&style=for-the-badge">
