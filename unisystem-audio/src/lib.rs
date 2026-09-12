@@ -32,6 +32,7 @@ where
         *pw::keys::MEDIA_TYPE => "Audio",
         *pw::keys::MEDIA_CATEGORY => "Capture",
         *pw::keys::MEDIA_ROLE => "Music",
+        *pw::keys::STREAM_CAPTURE_SINK => "true",
     };
 
     let stream = pw::stream::StreamBox::new(&core, "audioshare-capture", props)?;
