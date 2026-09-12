@@ -16,6 +16,19 @@
 
 ---
 
+> [!WARNING]
+> **🚀 INCOMING TRANSMISSION: THE NEXT BIG THING IS DROPPING SOON!**
+> 
+> *Tired of slow cloud uploads and missing USB cables? We are working on a highly classified, ultra-fast, PIN-secured sibling to AudioShare.* 
+> 
+> Project Codename: **`NodeDrop`** 🌐
+> 
+> *It will change how you transfer files forever. Star this repository and keep your eyes peeled. The Drop is coming...*
+
+---
+
+---
+
 ## 🚀 Features
 
 - **True Real-Time Streaming:** Achieves near-zero latency using raw PCM `f32` chunks over binary WebSockets.
