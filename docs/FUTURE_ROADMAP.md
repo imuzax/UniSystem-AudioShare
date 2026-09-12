@@ -33,5 +33,14 @@ This document outlines the strategic future plans for UniSystem AudioShare, focu
 - The web client sends JSON commands (e.g., `{"command": "volume_up", "value": 10}`).
 - The Rust server receives these commands and interfaces with the host OS (Windows/Linux) using native audio crates to control the master volume, mute, or skip tracks.
 
+## 5. 🎧 Spatial Audio & Surround Sound Networking (Dolby-style)
+**Goal:** Transform multiple connected mobile devices into a synchronized, multi-channel surround sound system (e.g., 5.1 or 7.1 Home Theater).
+
+**Implementation Strategy:**
+- **Channel Splitting (Backend):** The Rust server will capture the host PC's audio and separate the channels (Front-Left, Front-Right, Surround-Left, Subwoofer, etc.).
+- **Client Role Assignment (UI):** The React web client will allow users to select their device's physical location/role in the room.
+- **Targeted Streaming:** The server will stream only the specific audio channel data to the corresponding connected client.
+- **Clock Synchronization:** Implement NTP (Network Time Protocol) logic over WebSockets to ensure all devices play their respective channels at the exact same millisecond, eliminating phasing and echo.
+
 ---
 *This roadmap serves as the architectural blueprint for the next major versions of UniSystem AudioShare. These features will be developed and integrated incrementally.*
