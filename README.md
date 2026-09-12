@@ -73,7 +73,12 @@ sudo pacman -S --needed \
 ## 🎮 How to Run
 
 ### 1. Run the GUI Desktop App (Recommended)
-This launches the beautiful Tauri interface with the built-in network visualizer and one-click connection links.
+
+#### Windows (Easiest Method)
+Simply double-click the **`Start-Windows.bat`** file in the project folder. It will automatically install dependencies and launch the GUI!
+
+#### Linux & Manual Method
+If you are on Linux or prefer the terminal, run the following commands:
 ```bash
 cd unisystem-tauri
 npm install
