@@ -16,15 +16,15 @@ function App() {
 
   useEffect(() => {
     // Get network interfaces
-    invoke<NetworkInterface[]>("get_network_interfaces")
+    invoke<NetworkInterface[]>("get_network_ips")
       .then((interfaces) => {
         setIps(interfaces);
       })
       .catch(console.error);
 
     // Listen for volume peaks
-    const unlisten = listen<number>("volume-peak", (event) => {
-      const vol = event.payload;
+    const unlisten = listen<any>("volume-peak", (event) => {
+      const vol = event.payload.peak || 0;
       setPeaks(prev => {
         const newPeaks = [...prev];
         // Shift left
