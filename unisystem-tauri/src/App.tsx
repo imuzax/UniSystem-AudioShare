@@ -69,7 +69,16 @@ function App() {
             {ips.length > 0 ? ips.map((item, idx) => (
               <div key={idx} className="ip-card">
                 <span className="net-name">{item.name}</span>
-                <a href={`http://${item.ip}:8080`} target="_blank" className="net-ip">
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    import('@tauri-apps/plugin-opener').then(opener => {
+                      opener.open(`http://${item.ip}:8080`);
+                    });
+                  }} 
+                  className="net-ip"
+                >
                   http://{item.ip}:8080
                 </a>
               </div>
