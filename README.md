@@ -53,8 +53,8 @@ Take your phone, tablet, or another laptop that is connected to the **same Wi-Fi
 As soon as the web page loads, it will automatically connect to your PC via WebSockets.
 
 <div align="center">
-  <img src="docs/ShowCase/AfterConnection.png" alt="Connected Mobile Client" width="280" style="border-radius: 12px; border: 1px solid #333; margin: 10px;" />
-  <img src="docs/ShowCase/Pasted%20image.png" alt="Audio Visualizer" width="280" style="border-radius: 12px; border: 1px solid #333; margin: 10px;" />
+  <img src="docs/ShowCase/Pasted%20image.png" alt="Audio Visualizer (Before Connection)" width="280" style="border-radius: 12px; border: 1px solid #333; margin: 10px;" />
+  <img src="docs/ShowCase/AfterConnection.png" alt="Connected Mobile Client (After Connection)" width="280" style="border-radius: 12px; border: 1px solid #333; margin: 10px;" />
 </div>
 
 > [!NOTE]
