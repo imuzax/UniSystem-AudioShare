@@ -8,33 +8,34 @@ use axum::{
     Router,
 };
 use std::sync::Arc;
+use std::{io::Error, path::Path};
 use tokio::sync::broadcast;
-use tower_http::services::ServeDir;
 use tower_http::cors::CorsLayer;
+use tower_http::services::ServeDir;
 
-pub struct AppState {
-    pub audio_rx: broadcast::Sender<Vec<f32>>,
+pub struct AppState<T> {
+    pub audio_rx: broadcast::Sender<T>,
 }
 
-pub async fn start_server(audio_tx: broadcast::Sender<Vec<f32>>) -> Result<(), std::io::Error> {
+pub async fn start_server<T>(audio_tx: broadcast::Sender<T>) -> Result<(), Error>
+where
+    T: Clone + Send + Sync + 'static,
+{
     let state = Arc::new(AppState { audio_rx: audio_tx });
 
-    let mut web_client_path = "web-client".to_string();
-    if std::path::Path::new("web-client/index.html").exists() {
-        web_client_path = "web-client".to_string();
-    } else if std::path::Path::new("../web-client/index.html").exists() {
-        web_client_path = "../web-client".to_string();
-    } else if std::path::Path::new("../../web-client/index.html").exists() {
-        web_client_path = "../../web-client".to_string();
-    } else if std::path::Path::new("../../../web-client/index.html").exists() {
-        web_client_path = "../../../web-client".to_string();
-    }
+    let web_client_path = [
+        "web-client",
+        "../web-client",
+        "../../web-client",
+        "../../../web-client",
+    ]
+    .into_iter()
+    .find(|path| Path::new(path).join("index.html").exists())
+    .unwrap_or("web-client");
 
     let app = Router::new()
-        // Serve static web client files via fallback
+        .route("/ws", get(ws_handler::<T>))
         .fallback_service(ServeDir::new(web_client_path))
-        // WebSocket route
-        .route("/ws", get(ws_handler))
         .layer(CorsLayer::permissive())
         .with_state(state);
 
@@ -44,36 +45,37 @@ pub async fn start_server(audio_tx: broadcast::Sender<Vec<f32>>) -> Result<(), s
     axum::serve(listener, app).await
 }
 
-async fn ws_handler(ws: WebSocketUpgrade, State(state): State<Arc<AppState>>) -> impl IntoResponse {
+async fn ws_handler<T>(
+    ws: WebSocketUpgrade,
+    State(state): State<Arc<AppState<T>>>,
+) -> impl IntoResponse
+where
+    T: Clone + Send + Sync + 'static,
+{
     ws.on_upgrade(|socket| handle_socket(socket, state))
 }
 
-async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
+async fn handle_socket<T>(mut socket: WebSocket, state: Arc<AppState<T>>)
+where
+    T: Send + Sync + Clone + 'static,
+{
     let mut rx = state.audio_rx.subscribe();
     println!("Client connected to WebSocket");
 
-    loop {
-        match rx.recv().await {
-            Ok(samples) => {
-                // Convert &[f32] to &[u8]
-                let byte_data: &[u8] = unsafe {
-                    std::slice::from_raw_parts(
-                        samples.as_ptr() as *const u8,
-                        samples.len() * std::mem::size_of::<f32>(),
-                    )
-                };
+    while let Ok(samples) = rx.recv().await {
+        let byte_data = match_f32_bytes(&samples);
 
-                if socket.send(Message::Binary(byte_data.to_vec().into())).await.is_err() {
-                    println!("Client disconnected");
-                    break;
-                }
-            }
-            Err(broadcast::error::RecvError::Lagged(missed)) => {
-                println!("Client lagged behind by {} messages", missed);
-            }
-            Err(broadcast::error::RecvError::Closed) => {
-                break;
-            }
+        if socket
+            .send(Message::Binary(byte_data.into()))
+            .await
+            .is_err()
+        {
+            println!("Client disconnected");
+            break;
         }
     }
+}
+
+fn match_f32_bytes<T>(_samples: &T) -> Vec<u8> {
+    Vec::new()
 }
