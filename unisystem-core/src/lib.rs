@@ -19,9 +19,15 @@ pub struct AppState {
 pub async fn start_server(audio_tx: broadcast::Sender<Vec<f32>>) -> Result<(), std::io::Error> {
     let state = Arc::new(AppState { audio_rx: audio_tx });
 
+    let web_client_path = if std::path::Path::new("web-client").exists() {
+        "web-client"
+    } else {
+        "../web-client"
+    };
+
     let app = Router::new()
         // Serve static web client files via fallback
-        .fallback_service(ServeDir::new("web-client"))
+        .fallback_service(ServeDir::new(web_client_path))
         // WebSocket route
         .route("/ws", get(ws_handler))
         .layer(CorsLayer::permissive())
