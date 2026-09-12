@@ -27,6 +27,41 @@
 
 ---
 
+## 📸 Showcase & Usage Guide
+
+Here is a step-by-step guide on how to use UniSystem AudioShare to stream your PC audio.
+
+### Step 1: Launch the Dashboard (The Server)
+Once you run the desktop app on your PC, you will be greeted by the main dashboard. This acts as the audio server.
+
+<div align="center">
+  <img src="docs/ShowCase/Dashboard.png" alt="UniSystem Dashboard" width="700" style="border-radius: 12px; border: 1px solid #333;" />
+</div>
+
+> [!TIP]
+> **Which URL should you choose?**
+> - Look under the **"CONNECT YOUR DEVICES"** section on the dashboard.
+> - You will see a list of network interfaces (like Wi-Fi or Ethernet).
+> - **Action:** Find your active local IP (usually starts with `192.168.x.x`) and click the **[Copy]** button right next to it!
+
+### Step 2: Connect Your Phone (The Client)
+Take your phone, tablet, or another laptop that is connected to the **same Wi-Fi router**.
+- Open Google Chrome or Safari.
+- Paste the URL (e.g. `http://192.168.1.5:8080`) into the browser and hit Go!
+
+### Step 3: Enjoy Real-Time Audio
+As soon as the web page loads, it will automatically connect to your PC via WebSockets.
+
+<div align="center">
+  <img src="docs/ShowCase/AfterConnection.png" alt="Connected Mobile Client" width="280" style="border-radius: 12px; border: 1px solid #333; margin: 10px;" />
+  <img src="docs/ShowCase/Pasted%20image.png" alt="Audio Visualizer" width="280" style="border-radius: 12px; border: 1px solid #333; margin: 10px;" />
+</div>
+
+> [!NOTE]
+> **Success!** Any audio playing on your main PC (Spotify, YouTube, Games) will now stream perfectly in real-time to your phone!
+
+---
+
 ## 🛠️ Prerequisites & Installation
 
 ### Linux (Ubuntu / Debian / Pop!_OS)
