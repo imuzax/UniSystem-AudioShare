@@ -35,8 +35,9 @@ function App() {
   return (
     <div className="container">
       <header className="header">
-        <h1>UniSystem <span>AudioShare</span></h1>
-        <p className="subtitle">Ultra-Low Latency Wi-Fi Streaming Engine</p>
+        <img src="/logo.jpg" alt="UniSystem Logo" className="app-logo" />
+        <h1>UniSystem AudioShare</h1>
+        <p className="subtitle">Stream your PC audio to any device on the network in real-time.</p>
       </header>
 
       <main>

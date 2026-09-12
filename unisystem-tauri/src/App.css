@@ -11,10 +11,18 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
+  background-image: radial-gradient(circle at 10% 20%, rgba(74, 222, 128, 0.05) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
   color: var(--text-main);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden;
   user-select: none;
+  animation: bgShift 10s ease infinite alternate;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
 }
 
 .container {
@@ -23,12 +31,30 @@ body {
   height: 100vh;
   padding: 2rem;
   box-sizing: border-box;
-  background: radial-gradient(circle at 50% -20%, rgba(74, 222, 128, 0.15), transparent 60%);
 }
 
 .header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   margin-bottom: 2rem;
+}
+
+.app-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+  border: 1px solid rgba(74, 222, 128, 0.5);
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); box-shadow: 0 0 30px rgba(74, 222, 128, 0.5); }
 }
 
 h1 {
