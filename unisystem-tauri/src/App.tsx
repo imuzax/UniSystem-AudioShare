@@ -11,25 +11,22 @@ interface NetworkInterface {
 
 function App() {
   const [ips, setIps] = useState<NetworkInterface[]>([]);
-  // Create an array of 64 visualizer bars for a huge display
-  const [peaks, setPeaks] = useState<number[]>(new Array(64).fill(0));
+  // Use a smaller number of bars for a subtle, professional visualization
+  const [peaks, setPeaks] = useState<number[]>(new Array(32).fill(0));
+  const [copiedIp, setCopiedIp] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get network interfaces
     invoke<NetworkInterface[]>("get_network_ips")
       .then((interfaces) => {
         setIps(interfaces);
       })
       .catch(console.error);
 
-    // Listen for volume peaks
     const unlisten = listen<any>("volume-peak", (event) => {
       const vol = event.payload.peak || 0;
       setPeaks(prev => {
         const newPeaks = [...prev];
-        // Shift left
         newPeaks.shift();
-        // Add new volume with some random variation for aesthetics
         const variation = vol * (0.8 + Math.random() * 0.4);
         newPeaks.push(Math.min(1.0, variation));
         return newPeaks;
@@ -41,80 +38,99 @@ function App() {
     };
   }, []);
 
+  const handleCopy = (ip: string) => {
+    const url = `http://${ip}:8080`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedIp(ip);
+      setTimeout(() => setCopiedIp(null), 2000);
+    });
+  };
+
   return (
-    <div className="dashboard-wrapper">
-      {/* Dynamic Animated Background Orbs */}
-      <div className="aura-orb orb-primary"></div>
-      <div className="aura-orb orb-secondary"></div>
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <div className="brand-logo-container">
+          <img src="/logo.jpg" alt="UniSystem Logo" className="brand-logo" />
+        </div>
+        <div className="brand-text">
+          <h1>UniSystem AudioShare</h1>
+          <p className="subtitle">Stream your PC audio to any device on the network in real-time.</p>
+        </div>
+      </header>
 
-      <div className="glass-dashboard">
-        <header className="dashboard-header">
-          <div className="brand-title">
-            <img src="/logo.jpg" alt="UniSystem Logo" className="brand-logo" />
-            <div>
-              <h1>UniSystem <span>AudioShare</span></h1>
-              <p className="status-badge">
-                <span className="dot pulse"></span>
-                Engine Active & Streaming
-              </p>
-            </div>
+      <main className="dashboard-content">
+        <section className="card audio-card">
+          <div className="card-header">
+            <h2>LIVE AUDIO BROADCAST</h2>
           </div>
-        </header>
-
-        <main className="dashboard-content">
-          {/* Hero Visualizer */}
-          <section className="hero-visualizer-section">
+          <div className="audio-visualization-wrapper">
             <div className="visualizer-display">
               {peaks.map((p, i) => (
                 <div
                   key={i}
-                  className={`vis-bar ${p > 0.05 ? 'active' : ''}`}
+                  className="vis-bar"
                   style={{ 
-                    height: `${Math.max(4, p * 200)}px`,
-                    opacity: 0.3 + p * 0.7
+                    height: `${Math.max(4, p * 80)}px`,
+                    opacity: 0.2 + p * 0.8
                   }}
                 ></div>
               ))}
             </div>
-            <div className="db-meter">
-              <span>-60 dB</span>
-              <span>-30 dB</span>
-              <span>0 dB</span>
+            <div className="audio-status-footer">
+              <span className="status-indicator">
+                <span className="dot pulse"></span>
+                Broadcasting
+              </span>
+              <span className="tech-specs">48 kHz · Float32 PCM</span>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Network Links */}
-          <section className="network-section">
-            <h2 className="section-title">Available Connectors</h2>
-            <p className="instruction-text">
-              Open these URLs on any device connected to the same Wi-Fi.
-            </p>
-            
-            <div className="devices-grid">
-              {ips.length > 0 ? ips.map((item, idx) => (
-                <div key={idx} className="device-card">
-                  <div className="device-info">
-                    <span className="device-icon">🌐</span>
-                    <span className="device-name">{item.name}</span>
+        <section className="card network-card">
+          <div className="card-header">
+            <h2>CONNECT YOUR DEVICES</h2>
+            <p className="instruction">Open this URL on your phone's browser to listen instantly.</p>
+          </div>
+          
+          <div className="network-rows">
+            {ips.length > 0 ? (
+              ips.map((item, idx) => (
+                <div key={idx} className="network-row">
+                  <div className="row-left">
+                    <span className="interface-name">{item.name}</span>
+                    <span className="status-badge available">
+                      <span className="status-dot"></span> Available
+                    </span>
                   </div>
-                  <a 
-                    href="#" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openUrl(`http://${item.ip}:8080`);
-                    }} 
-                    className="device-link"
-                  >
-                    http://{item.ip}:8080
-                  </a>
+                  
+                  <div className="row-right">
+                    <a 
+                      href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        openUrl(`http://${item.ip}:8080`);
+                      }} 
+                      className="url-display"
+                    >
+                      http://{item.ip}:8080
+                    </a>
+                    <button 
+                      className="copy-btn" 
+                      onClick={() => handleCopy(item.ip)}
+                    >
+                      {copiedIp === item.ip ? "Copied" : "Copy"}
+                    </button>
+                  </div>
                 </div>
-              )) : (
-                <div className="loading-state">Scanning Network...</div>
-              )}
-            </div>
-          </section>
-        </main>
-      </div>
+              ))
+            ) : (
+              <div className="empty-state">
+                Scanning for active network interfaces...
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
