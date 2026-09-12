@@ -6,3 +6,6 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+axum = { version = "0.8.9", features = ["ws"] }
+tokio = { version = "1.53.1", features = ["full"] }
+tower-http = { version = "0.7.1", features = ["fs", "cors"] }

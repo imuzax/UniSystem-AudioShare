@@ -1,11 +1,16 @@
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
+use tokio::sync::broadcast;
 use unisystem_audio::start_audio_capture;
+use unisystem_core::start_server;
 
-fn main() -> anyhow::Result<()> {
-    println!("Starting UniSystem AudioShare CLI...");
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    println!("Starting UniSystem AudioShare Network Engine...");
     
-    // Flag to control when to stop capturing
+    // Create a broadcast channel that can hold up to 100 recent audio chunks
+    let (audio_tx, _) = broadcast::channel::<Vec<f32>>(100);
+    
+    // Setup shutdown flag
     let stop_flag = Arc::new(Mutex::new(false));
     let stop_flag_clone = stop_flag.clone();
 
@@ -13,35 +18,52 @@ fn main() -> anyhow::Result<()> {
     ctrlc::set_handler(move || {
         println!("\nShutting down...");
         *stop_flag_clone.lock().unwrap() = true;
+        std::process::exit(0);
     }).expect("Error setting Ctrl-C handler");
 
+    // Start the Web Server concurrently
+    let audio_tx_clone = audio_tx.clone();
+    tokio::spawn(async move {
+        if let Err(e) = start_server(audio_tx_clone).await {
+            eprintln!("Web server crashed: {}", e);
+        }
+    });
+
     println!("Listening to default audio capture stream. Press Ctrl+C to stop.");
+    println!("Open your phone browser and navigate to this computer's local IP on port 8080.");
     
-    // We'll calculate simple peak volume per buffer and print a basic level meter
-    start_audio_capture(move |samples: &[f32]| {
-        if samples.is_empty() {
-            return;
-        }
-
-        // Calculate max amplitude (peak)
-        let mut peak = 0.0_f32;
-        for &sample in samples.iter() {
-            let abs_sample = sample.abs();
-            if abs_sample > peak {
-                peak = abs_sample;
+    // We run the audio capture on a separate dedicated OS thread because PipeWire's MainLoop blocks
+    std::thread::spawn(move || {
+        start_audio_capture(move |samples: &[f32]| {
+            if samples.is_empty() {
+                return;
             }
-        }
-        
-        // Convert to a simple progress bar/meter
-        let max_bars = 50;
-        let num_bars = (peak * max_bars as f32).min(max_bars as f32) as usize;
-        let meter = "=".repeat(num_bars);
-        
-        // Use carriage return to overwrite the same line
-        print!("\rVolume: [{:<50}] {:.3}", meter, peak);
-        use std::io::Write;
-        let _ = std::io::stdout().flush();
-    }, stop_flag)?;
 
-    Ok(())
+            // Calculate peak for the console meter
+            let mut peak = 0.0_f32;
+            for &sample in samples.iter() {
+                let abs_sample = sample.abs();
+                if abs_sample > peak {
+                    peak = abs_sample;
+                }
+            }
+            
+            let max_bars = 40;
+            let num_bars = (peak * max_bars as f32).min(max_bars as f32) as usize;
+            let meter = "=".repeat(num_bars);
+            
+            print!("\rVolume: [{:<40}] {:.3} | Broadcast Active", meter, peak);
+            use std::io::Write;
+            let _ = std::io::stdout().flush();
+
+            // Send the raw PCM float block to all connected WebSockets
+            // Ignore errors if no clients are connected yet
+            let _ = audio_tx.send(samples.to_vec());
+        }, stop_flag).expect("Audio capture failed");
+    });
+    
+    // Keep the main tokio thread alive
+    loop {
+        tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+    }
 }
