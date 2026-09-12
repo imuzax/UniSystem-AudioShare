@@ -1,0 +1,10 @@
+   Compiling unisystem-core v0.1.0 (/run/media/muzax/Work/Projects/Open-Source/UniSystem-AudioShare/unisystem-core)
+warning: unused variable: `n_channels`
+  --> unisystem-audio/src/lib.rs:70:21
+   |
+70 |                 let n_channels = user_data.format.channels();
+   |                     ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_n_channels`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `unisystem-audio` (lib) generated 1 warning (run `cargo fix --lib -p unisystem-audio` to apply 1 suggestion)

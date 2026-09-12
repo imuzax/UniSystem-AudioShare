@@ -20,8 +20,8 @@ pub async fn start_server(audio_tx: broadcast::Sender<Vec<f32>>) -> Result<(), s
     let state = Arc::new(AppState { audio_rx: audio_tx });
 
     let app = Router::new()
-        // Serve static web client files
-        .nest_service("/", ServeDir::new("web-client"))
+        // Serve static web client files via fallback
+        .fallback_service(ServeDir::new("web-client"))
         // WebSocket route
         .route("/ws", get(ws_handler))
         .layer(CorsLayer::permissive())
