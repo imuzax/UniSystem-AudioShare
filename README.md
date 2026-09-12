@@ -106,6 +106,20 @@ Then, manually open your browser to the IP address printed in the terminal.
 - [ ] **Future:** Pre-compiled standalone `.exe` and `.AppImage` releases on GitHub.
 - [ ] **Future:** Native Android App client for enhanced background listening.
 
+## 👥 Core Contributors
+
+We are grateful to the open-source community and our core team for building this project:
+
+<p align="left">
+  <a href="https://github.com/imuzax"><img src="https://avatars.githubusercontent.com/imuzax?v=4" width="55" height="55" style="border-radius: 50%; border: 2px solid #22c55e; margin-right: 8px;" alt="imuzax"/></a>
+  <a href="https://github.com/udev4681-debug"><img src="https://avatars.githubusercontent.com/udev4681-debug?v=4" width="55" height="55" style="border-radius: 50%; border: 2px solid #0ea5e9; margin-right: 8px;" alt="udev4681-debug"/></a>
+  <a href="#"><img src="https://avatars.githubusercontent.com/u/1024?v=4" width="55" height="55" style="border-radius: 50%; margin-right: 8px;" alt="contributor"/></a>
+  <a href="#"><img src="https://avatars.githubusercontent.com/u/2048?v=4" width="55" height="55" style="border-radius: 50%; margin-right: 8px;" alt="contributor"/></a>
+  <a href="#"><img src="https://avatars.githubusercontent.com/u/4096?v=4" width="55" height="55" style="border-radius: 50%; margin-right: 8px;" alt="contributor"/></a>
+  <a href="#"><img src="https://avatars.githubusercontent.com/u/8192?v=4" width="55" height="55" style="border-radius: 50%; margin-right: 8px;" alt="contributor"/></a>
+  <a href="#"><img src="https://avatars.githubusercontent.com/u/16384?v=4" width="55" height="55" style="border-radius: 50%; margin-right: 8px;" alt="contributor"/></a>
+</p>
+
 ---
 
 ### License
