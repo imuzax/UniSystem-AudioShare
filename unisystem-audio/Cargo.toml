@@ -1,0 +1,10 @@
+[package]
+name = "unisystem-audio"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow = "1.0.104"
+pipewire = "0.10.1"

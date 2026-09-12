@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = [
+    "unisystem-core",
+    "unisystem-audio",
+    "unisystem-tauri",
+    "unisystem-cli"
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["UniSystem Contributors"]
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+# Dependencies will be managed globally here if needed

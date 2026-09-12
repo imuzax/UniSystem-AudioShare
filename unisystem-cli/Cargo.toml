@@ -1,0 +1,11 @@
+[package]
+name = "unisystem-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow = "1.0.104"
+ctrlc = "3.5.2"
+unisystem-audio = { version = "0.1.0", path = "../unisystem-audio" }
