@@ -53,7 +53,6 @@ function App() {
           <img src="/logo.svg" alt="UniSystem Logo" className="brand-logo" />
         </div>
         <div className="brand-text">
-          <h1>UniSystem AudioShare</h1>
           <p className="subtitle">Stream your PC audio to any device on the network in real-time.</p>
         </div>
       </header>

@@ -1,27 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 120">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1a1c23"/>
-      <stop offset="100%" stop-color="#0d0e12"/>
-    </linearGradient>
-    <linearGradient id="accentGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#22c55e"/>
       <stop offset="100%" stop-color="#0ea5e9"/>
     </linearGradient>
   </defs>
-  <!-- Background -->
-  <rect width="256" height="256" rx="56" fill="url(#bgGrad)"/>
-  <!-- Subtle Inner Border -->
-  <rect x="4" y="4" width="248" height="248" rx="52" fill="none" stroke="#2a2d36" stroke-width="2"/>
-  
-  <!-- Sound Wave / Audio Equalizer -->
-  <rect x="72" y="96" width="16" height="64" rx="8" fill="url(#accentGrad)"/>
-  <rect x="100" y="64" width="16" height="96" rx="8" fill="url(#accentGrad)"/>
-  <rect x="128" y="44" width="16" height="116" rx="8" fill="#ffffff"/>
-  <rect x="156" y="80" width="16" height="80" rx="8" fill="url(#accentGrad)"/>
-  <rect x="184" y="104" width="16" height="56" rx="8" fill="url(#accentGrad)"/>
-  
-  <!-- Broadcast Arcs (Inverted Wi-Fi Style) -->
-  <path d="M 88 184 A 64 64 0 0 0 168 184" fill="none" stroke="#3a3d46" stroke-width="12" stroke-linecap="round"/>
-  <path d="M 108 208 A 24 24 0 0 0 148 208" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Waveform 'U' -->
+  <g stroke="url(#waveGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Pulsing start dot -->
+    <circle cx="24" cy="50" r="6" fill="#22c55e" stroke="none"/>
+    
+    <!-- Audio Wave forming 'U' -->
+    <path d="M 46 50 
+             L 60 50 
+             L 75 10 
+             L 90 70 
+             C 90 100, 130 100, 130 70 
+             L 145 10 
+             L 160 50 
+             L 175 50" />
+  </g>
+
+  <!-- Typographic Name -->
+  <text x="180" y="80" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="76" fill="#f8fafc" letter-spacing="-1.5">
+    niSystem
+  </text>
 </svg>
