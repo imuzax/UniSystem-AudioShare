@@ -1,15 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120">
   <defs>
+    <!-- Ultra-Premium Vibrant Gradient -->
     <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#22c55e"/>
-      <stop offset="100%" stop-color="#0ea5e9"/>
+      <stop offset="0%" stop-color="#10b981"/> <!-- Emerald Green -->
+      <stop offset="100%" stop-color="#0ea5e9"/> <!-- Cyan/Blue -->
     </linearGradient>
   </defs>
 
   <!-- Waveform 'U' -->
   <g stroke="url(#waveGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
     <!-- Pulsing start dot -->
-    <circle cx="24" cy="50" r="6" fill="#22c55e" stroke="none"/>
+    <circle cx="24" cy="50" r="6" fill="#10b981" stroke="none"/>
     
     <!-- Audio Wave forming 'U' -->
     <path d="M 46 50 
@@ -22,8 +23,8 @@
              L 175 50" />
   </g>
 
-  <!-- Typographic Name -->
-  <text x="180" y="80" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-weight="700" font-size="76" fill="#f8fafc" letter-spacing="-1.5">
-    niSystem
+  <!-- Premium Typography -->
+  <text x="185" y="80" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif" font-size="76" letter-spacing="-1.5">
+    <tspan font-weight="800" fill="#ffffff">ni</tspan><tspan font-weight="300" fill="#a1a1aa">System</tspan>
   </text>
 </svg>
