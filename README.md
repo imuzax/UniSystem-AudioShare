@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="unisystem-tauri/public/logo.jpg" alt="UniSystem Logo" width="200" style="border-radius: 20px; box-shadow: 0 0 20px rgba(74, 222, 128, 0.5); margin-bottom: 20px;" />
+  <img src="unisystem-tauri/public/logo.svg" alt="UniSystem Logo" width="160" style="margin-bottom: 20px;" />
 
   # UniSystem AudioShare
 

@@ -50,7 +50,7 @@ function App() {
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div className="brand-logo-container">
-          <img src="/logo.jpg" alt="UniSystem Logo" className="brand-logo" />
+          <img src="/logo.svg" alt="UniSystem Logo" className="brand-logo" />
         </div>
         <div className="brand-text">
           <h1>UniSystem AudioShare</h1>
