@@ -7,57 +7,49 @@ use axum::{
     routing::get,
     Router,
 };
-use std::sync::Arc;
-use std::{io::Error, path::Path};
+use std::{path::PathBuf, sync::Arc};
+use std::io::Error;
 use tokio::sync::broadcast;
 use tower_http::cors::CorsLayer;
 use tower_http::services::ServeDir;
 
-pub trait AsBytes {
-    fn as_bytes(&self) -> &[u8];
+pub trait AudioSample: Copy+Send+Sync+'static {
+    fn as_bytes(samples: &[Self]) -> &[u8];
 }
 
-impl AsBytes for Vec<f32> {
-    fn as_bytes(&self) -> &[u8] {
+impl AudioSample for f32 {
+    fn as_bytes(samples: &[Self]) -> &[u8] {
         unsafe {
             std::slice::from_raw_parts(
-                self.as_ptr() as *const u8,
-                self.len() * std::mem::size_of::<f32>(),
+                samples.as_ptr() as *const u8,
+                std::mem::size_of_val(samples),
             )
         }
     }
 }
 
-impl AsBytes for Vec<i16> {
-    fn as_bytes(&self) -> &[u8] {
+impl AudioSample for i16 {
+    fn as_bytes(samples: &[Self]) -> &[u8] {
         unsafe {
             std::slice::from_raw_parts(
-                self.as_ptr() as *const u8,
-                self.len() * std::mem::size_of::<i16>(),
+                samples.as_ptr() as *const u8,
+                std::mem::size_of_val(samples),
             )
         }
     }
 }
 
-pub struct AppState<T> {
-    pub audio_rx: broadcast::Sender<T>,
+pub struct AppState<T> where T:AudioSample {
+    pub audio_tx: broadcast::Sender<Vec<T>>,
 }
 
-pub async fn start_server<T>(audio_tx: broadcast::Sender<T>) -> Result<(), Error>
+pub async fn start_server<T>(audio_tx: broadcast::Sender<Vec<T>>) -> Result<(), Error>
 where
-    T: Clone + Send + Sync + AsBytes + 'static,
+    T: AudioSample,
 {
-    let state = Arc::new(AppState { audio_rx: audio_tx });
+    let state = Arc::new(AppState { audio_tx });
 
-    let web_client_path = [
-        "web-client",
-        "../web-client",
-        "../../web-client",
-        "../../../web-client",
-    ]
-    .into_iter()
-    .find(|path| Path::new(path).join("index.html").exists())
-    .unwrap_or("web-client");
+    let web_client_path = web_client_path();
 
     let app = Router::new()
         .route("/ws", get(ws_handler::<T>))
@@ -71,33 +63,54 @@ where
     axum::serve(listener, app).await
 }
 
+pub fn web_client_path() -> PathBuf {
+    [
+        "web-client",
+        "../web-client",
+        "../../web-client",
+        "../../../web-client",
+    ]
+    .into_iter()
+    .map(PathBuf::from)
+    .find(|path| path.join("index.html").exists())
+    // .expect("path not found")
+    .unwrap_or_else(|| PathBuf::from("web-client"))
+}
+
 async fn ws_handler<T>(
     ws: WebSocketUpgrade,
     State(state): State<Arc<AppState<T>>>,
 ) -> impl IntoResponse
 where
-    T: Clone + Send + Sync + AsBytes + 'static,
+    T: AudioSample,
 {
-    ws.on_upgrade(|socket| handle_socket(socket, state))
+    ws.on_upgrade(move |socket| handle_socket(socket, state))
 }
 
 async fn handle_socket<T>(mut socket: WebSocket, state: Arc<AppState<T>>)
 where
-    T: Send + Sync + Clone + AsBytes + 'static,
+    T:AudioSample,
 {
-    let mut rx = state.audio_rx.subscribe();
+    let mut rx = state.audio_tx.subscribe();
     println!("Client connected to WebSocket");
 
-    while let Ok(samples) = rx.recv().await {
-        let byte_data = samples.as_bytes();
-
-        if socket
-            .send(Message::Binary(byte_data.to_vec().into()))
-            .await
-            .is_err()
-        {
-            println!("Client disconnected");
-            break;
+    loop {
+        match rx.recv().await {
+            Ok(samples) => {
+                let bytes = T::as_bytes(&samples);
+                if socket.send(Message::Binary(bytes.to_vec().into())).await.is_err() {
+                    println!("client got discommeted!..");
+                    break;
+                }
+            }
+            Err(broadcast::error::RecvError::Lagged(skipped)) => {
+                eprintln!("socket cleint lagged..skipping audio packs: {}", skipped);
+                continue;
+            }
+            Err(broadcast::error::RecvError::Closed) => {
+                println!("udio broadcast closed..");
+                break;
+            }
         }
     }
 }
